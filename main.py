@@ -93,11 +93,12 @@ def save_csv(col_name:list, item_list:list, path:str):
     
     stack = []
     for i in item_list:
-        np_array = np.array(i)
+        np_array = np.array(i).astype('float')
         h = np_array.shape[0] 
 
         if h < 14: 
             # Insert Nan 
+            # Nan only works with float 
             # (ref) https://moonbooks.org/Articles/How-to-add-a-new-column-of-nan-values-in-an-array-matrix-with-numpy-in-python-/
             num_Nan = 14 - h
             col = np.zeros(num_Nan)
@@ -110,7 +111,7 @@ def save_csv(col_name:list, item_list:list, path:str):
     print( )
         
     concate = pd.DataFrame(np.hstack(stack), columns = col_name)
-    concate.to_csv(path , index=False)
+    concate.to_csv(path , index=True)
 
 
 
