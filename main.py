@@ -1,3 +1,4 @@
+import argparse 
 import sys 
 import os 
 import os.path as osp 
@@ -8,9 +9,15 @@ from tqdm import tqdm
 from sklearn.preprocessing import OneHotEncoder
 from collections import OrderedDict
 
+# =============== # 
+# Argument by CLI # 
+# =============== # 
+parser = argparse.ArgumentParser()
+parser.add_argument('--data_root', default='data', help="Root directory ")  # to read 
+parser.add_argument('--target', default='indiv', help="indiv or global ")
+
+
 actVec_lens = [14, 6, 14, 13, 13, 12 ]
-
-
 
 
 def read_excel(Path:str) -> pd.core.frame.DataFrame: 
@@ -34,7 +41,11 @@ def get_onehot(len_vec:int) -> np.array:
 
 #%%
 
-def action_count(path: str, act_onehot:np.array) -> OrderedDict:
+def action_count(path: str, act_onehot:np.array, target:str) -> OrderedDict:
+    f_name = {  'indiv': 'Indiv_feature',
+                'global' : 'Global_feature',
+            }
+
     activity_dict = OrderedDict()
 
     csv_df = read_excel(path)
@@ -57,7 +68,7 @@ def action_count(path: str, act_onehot:np.array) -> OrderedDict:
 
             if np.array_equal(label, check_act): # (ref) https://numpy.org/doc/stable/reference/generated/numpy.array_equal.html
 
-                feature = csv_df['Indiv_feature'].iloc[i]
+                feature = csv_df[f_name[target]].iloc[i]
                 activity_dict[act_idx].append(feature)            
 
     return activity_dict
@@ -118,8 +129,13 @@ def save_csv(col_name:list, item_list:list, path:str):
 
 
 if __name__ == '__main__':
-    rootDir = "data"
-    targetFeature = "indiv"
+
+
+    args = parser.parse_args()
+
+    rootDir = args.data_root
+    targetFeature = args.target
+
     categoryPath = osp.join(rootDir, targetFeature)
     category_list = sorted(os.listdir(categoryPath ))
 
@@ -135,8 +151,12 @@ if __name__ == '__main__':
         print("")
         group = []
         for i, subj in tqdm(enumerate(subj_files), total=len(subj_files)): 
+
+            if not subj.endswith('.xlsx'):
+                continue
+
             annoPath = osp.join(categoryPath , action_category , subj)
-            activity_dict = action_count(annoPath, act_onehot)
+            activity_dict = action_count(annoPath, act_onehot, targetFeature)
 
             group.append(activity_dict)
 
@@ -154,5 +174,5 @@ if __name__ == '__main__':
     # Save as .csv 
     column_name = [i.split("_")[-1] for i in category_list]
 
-    save_csv(column_name, Means, "./Means.csv")
-    save_csv(column_name, Nums, "./Nums.csv")
+    save_csv(column_name, Means, f"./{targetFeature}_Means.csv")
+    save_csv(column_name, Nums, f"./{targetFeature}_Nums.csv")
