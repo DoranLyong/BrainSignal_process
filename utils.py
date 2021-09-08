@@ -9,18 +9,22 @@ import seaborn as sns
 
 
 
-def read_excel(Path:str) -> pd.core.frame.DataFrame: 
-    df = pd.read_excel(Path, index_col = 0 ) # (ref) https://pandas.pydata.org/docs/reference/api/pandas.read_excel.html
-#    df = df.dropna(axis=0)  # drop rows(axis=0) including NaN
+def read_excel(Path:str, drop_nan:bool=True, index_col=0) -> pd.core.frame.DataFrame: 
+    df = pd.read_excel(Path,  index_col = index_col ) # (ref) https://pandas.pydata.org/docs/reference/api/pandas.read_excel.html
+
+    if drop_nan:
+        df = df.dropna(axis=0)  # drop rows(axis=0) including NaN
 
     return df
 
 
 
 
-def read_csv(Path:str) -> pd.core.frame.DataFrame: 
-    df = pd.read_csv(Path, index_col = 0, encoding='utf-8' ) # (ref) https://pandas.pydata.org/docs/reference/api/pandas.read_excel.html
-#    df = df.dropna(axis=0)  # drop rows(axis=0) including NaN
+def read_csv(Path:str, drop_nan:bool=True, index_col=False) -> pd.core.frame.DataFrame: 
+    df = pd.read_csv(Path, encoding='utf-8') # (ref) https://pandas.pydata.org/docs/reference/api/pandas.read_excel.html
+
+    if drop_nan:
+        df = df.dropna(axis=0)  # drop rows(axis=0) including NaN
 
     return df
 
