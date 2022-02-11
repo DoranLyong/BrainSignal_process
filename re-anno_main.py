@@ -141,7 +141,7 @@ if __name__ == '__main__':
         # ===== Adding new columns to the DataFrame 
         # (ref) https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.add.html
         column_names = ["name", "indiv_feature", "global_feature", "motion",
-                        "category1", "category2", "category3", "category4", "category5", "category6"]
+                        "category1", "category3"]
 
         category_concate = np.hstack(label_by_category)
         new_df = pd.DataFrame(np.hstack([df_anno.to_numpy(), category_concate]), columns = column_names )
